@@ -221,7 +221,7 @@
     LOTComposition *laScene = [[LOTAnimationCache sharedCache] animationForKey:url.absoluteString];
     if (laScene) {
       [self _initializeAnimationContainer];
-      [self _setupWithSceneModel:laScene restoreAnimationState:NO];
+      [self _setupWithSceneModel:laScene restoreAnimationState:NO withContentsOfURL:url];
     } else {
       _animationState = [[LOTAnimationState alloc] initWithDuration:LOT_singleFrameTimeValue layer:nil frameRate:@1];
       dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -240,7 +240,7 @@
         dispatch_async(dispatch_get_main_queue(), ^(void){
           [[LOTAnimationCache sharedCache] addAnimation:laScene forKey:url.absoluteString];
           [self _initializeAnimationContainer];
-          [self _setupWithSceneModel:laScene restoreAnimationState:YES];
+          [self _setupWithSceneModel:laScene restoreAnimationState:YES withContentsOfURL:url];
         });
       });
     }
@@ -252,7 +252,7 @@
   self = [super initWithFrame:model.compBounds];
   if (self) {
     [self _initializeAnimationContainer];
-    [self _setupWithSceneModel:model restoreAnimationState:NO];
+    [self _setupWithSceneModel:model restoreAnimationState:NO withContentsOfURL:nil];
   }
   return self;
 }
@@ -277,9 +277,9 @@
 
 #endif
 
-- (void)_setupWithSceneModel:(LOTComposition *)model restoreAnimationState:(BOOL)restoreAnimation {
+- (void)_setupWithSceneModel:(LOTComposition *)model restoreAnimationState:(BOOL)restoreAnimation withContentsOfURL:(NSURL *)url {
   _sceneModel = model;
-  [self _buildSubviewsFromModel];
+  [self _buildSubviewsFromModelWithContentsOfURL:url];
   LOTAnimationState *oldState = _animationState;
   _animationState = [[LOTAnimationState alloc] initWithDuration:_sceneModel.timeDuration layer:_timingLayer frameRate:_sceneModel.framerate];
 
@@ -297,7 +297,7 @@
   }
 }
 
-- (void)_buildSubviewsFromModel {
+- (void)_buildSubviewsFromModelWithContentsOfURL:(NSURL *)url {
   if (_sceneModel) {
     if (_compLayer) {
       [_compLayer removeFromSuperlayer];
@@ -306,7 +306,8 @@
     }
     _compLayer = [[LOTCompositionLayer alloc] initWithLayerGroup:_sceneModel.layerGroup
                                                   withAssetGroup:_sceneModel.assetGroup
-                                                      withBounds:_sceneModel.compBounds];
+                                                      withBounds:_sceneModel.compBounds
+                                               withContentsOfURL:url];
     [_timingLayer addSublayer:_compLayer];
   }
 }
