@@ -13,7 +13,7 @@
 
 @interface LOTLayerView : LOTAnimatableLayer
 
-- (instancetype)initWithModel:(LOTLayer *)model inLayerGroup:(LOTLayerGroup *)layerGroup;
+- (instancetype)initWithModel:(LOTLayer *)model inLayerGroup:(LOTLayerGroup *)layerGroup  withContentsOfURL:(NSURL *)url;
 
 - (void)LOT_addChildLayer:(CALayer *)childLayer;
 

@@ -92,12 +92,14 @@
   NSArray<LOTParentLayer *> *_parentLayers;
   LOTMaskLayer *_maskLayer;
   CALayer *_childSolid;
+  NSURL *_assetsURL;
 }
 
-- (instancetype)initWithModel:(LOTLayer *)model inLayerGroup:(LOTLayerGroup *)layerGroup {
+- (instancetype)initWithModel:(LOTLayer *)model inLayerGroup:(LOTLayerGroup *)layerGroup  withContentsOfURL:(NSURL *)url {
   self = [super initWithLayerDuration:model.layerDuration];
   if (self) {
     _layerModel = model;
+    _assetsURL = url;
     [self _setupViewFromModelWithLayerGroup:layerGroup];
   }
   return self;
@@ -320,6 +322,14 @@
   if (_layerModel.imageAsset.imageName) {
     NSArray *components = [_layerModel.imageAsset.imageName componentsSeparatedByString:@"."];
     UIImage *image = [UIImage imageNamed:components.firstObject];
+      
+    if (image == nil && _assetsURL != nil) {
+        NSURL *url = [_assetsURL URLByDeletingLastPathComponent];
+        NSString *imagePath = [_layerModel.imageAsset.imageDirectory stringByAppendingString:_layerModel.imageAsset.imageName];
+        NSString *assetPath = [url URLByAppendingPathComponent:imagePath].path;
+        image = [UIImage imageWithContentsOfFile:assetPath];
+    }
+      
     if (image) {
       _childSolid.contents = (__bridge id _Nullable)(image.CGImage);
     } else {

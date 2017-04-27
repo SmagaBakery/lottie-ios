@@ -33,11 +33,13 @@
 
 - (instancetype)initWithLayerGroup:(LOTLayerGroup *)layerGroup
                     withAssetGroup:(LOTAssetGroup *)assetGroup
-                        withBounds:(CGRect)bounds {
+                        withBounds:(CGRect)bounds
+                 withContentsOfURL:(NSURL *)url {
+    
   self = [super init];
   if (self) {
     self.masksToBounds = YES;
-    [self _setupWithLayerGroup:layerGroup withAssetGroup:assetGroup withBounds:bounds];
+    [self _setupWithLayerGroup:layerGroup withAssetGroup:assetGroup withBounds:bounds withContentsOfURL:url];
   }
   return self;
 }
@@ -45,7 +47,7 @@
 - (void)_setupWithLayerGroup:(LOTLayerGroup *)layerGroup
               withAssetGroup:(LOTAssetGroup *)assetGroup
                   withBounds:(CGRect)bounds
-               {
+           withContentsOfURL:(NSURL *)url {
   if (_customLayers) {
     for (LOTCustomChild *child in _customLayers) {
       [child.childView.layer removeFromSuperlayer];
@@ -78,12 +80,12 @@
       asset = [assetGroup assetModelForID:layer.referenceID];
     }
     
-    LOTLayerView *layerView = [[LOTLayerView alloc] initWithModel:layer inLayerGroup:layerGroup];
+    LOTLayerView *layerView = [[LOTLayerView alloc] initWithModel:layer inLayerGroup:layerGroup withContentsOfURL:url];
     
     if (asset.layerGroup) {
       LOTCompositionLayer *precompLayer = [[LOTCompositionLayer alloc] initWithLayerGroup:asset.layerGroup
                                                                            withAssetGroup:assetGroup
-                                                                               withBounds:layer.layerBounds];
+                                                                               withBounds:layer.layerBounds withContentsOfURL:nil];
       precompLayer.frame = layer.layerBounds;
       [layerView LOT_addChildLayer:precompLayer];
     }
